@@ -5,16 +5,19 @@ import Home from "./components/Home";
 import Base from "./components/Base";
 import Toppings from "./components/Toppings";
 import Order from "./components/Order";
-import Modal from "./components/Modal.jsx";
+import Modal from "./components/Modal";
 import { AnimatePresence } from "framer-motion";
+
 function App() {
-  const [modal, setModal] = useState(false);
+  const [modal, setModal] = useState(true);
   const location = useLocation();
   const [pizza, setPizza] = useState({ base: "", toppings: [] });
+  const [showModal, setShowModal] = useState(false);
 
   const addBase = base => {
     setPizza({ ...pizza, base });
   };
+
   const addTopping = topping => {
     let newToppings;
     if (!pizza.toppings.includes(topping)) {
@@ -29,25 +32,22 @@ function App() {
     <>
       <Header />
       <Modal modal={modal} setModal={setModal} />
-      <AnimatePresence exitBeforeEnter onExitComplete={() => setModal(false)}>
-        {/* it's used to make animation for routing elements when element Leave the DOM */}
-        {/* used with (exit) animation attribute */}
-        {/* exitBeforeEnter --> used to make element exit at first then Enter the next element */}
-        {/* onExitComplete --> it will rerender included function every time when
-            path of router changed */}
+      <Modal showModal={showModal} />
+      <AnimatePresence
+        exitBeforeEnter
+        onExitComplete={() => setShowModal(false)}
+      >
         <Switch location={location} key={location.key}>
-          {/* location here used to know which routing element leave the dom,
-            it tell AnimatePresence which routing element will leave the DOM */}
-          <Route exact path="/base">
+          <Route path="/base">
             <Base addBase={addBase} pizza={pizza} />
           </Route>
-          <Route exact path="/toppings">
+          <Route path="/toppings">
             <Toppings addTopping={addTopping} pizza={pizza} />
           </Route>
-          <Route exact path="/order">
-            <Order pizza={pizza} setModal={setModal} />
+          <Route path="/order">
+            <Order pizza={pizza} setShowModal={setShowModal} />
           </Route>
-          <Route exact path="/">
+          <Route path="/">
             <Home />
           </Route>
         </Switch>
